@@ -1,3 +1,6 @@
+Learn about Middleware in laravel and jwt Authentication in laravel
+
+
 ## Facebook Clone 
     - Feature
     1. User Authentication (Login, Register, Delete Account)
