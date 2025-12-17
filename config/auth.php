@@ -42,8 +42,9 @@ return [
         ],
 
         'api' => [
-            'driver' => 'passport',
+            'driver' => 'sanctum', // កែពី 'passport' មក 'sanctum' វិញ
             'provider' => 'users',
+            'hash' => false,
         ],
     ],
 
