@@ -82,9 +82,25 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(Auth::user(), 200);
-    }
+        // ១. ចាប់យក User ដែលកំពុង Login
+        $user = Auth::user();
 
+        // ២. ឆែកមើលថា តើ User នោះមានរូបភាពឬអត់?
+        if ($user && $user->profile_image) {
+            
+            // ៣. ឆែកមើលថា តើរូបនោះជា Link (http...) ស្រាប់ហើយឬនៅ?
+            // បើមិនមែនជា Link ទេ (មានន័យថាជាឈ្មោះ file ដូចជា 123.jpg) ចាំថែម Domain
+            if (!filter_var($user->profile_image, FILTER_VALIDATE_URL)) {
+                
+                // ៤. ប្រើ url() ដើម្បីភ្ជាប់ Domain + Folder + Image Name
+                // លទ្ធផល៖ http://172.10.0.69:8000/images/123.jpg
+                $user->profile_image = url('images/' . $user->profile_image);
+            }
+        }
+
+        return response()->json($user, 200);
+    }
+    
     /**
      * Update user profile
      */

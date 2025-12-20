@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use App\Models\User; // <--- បន្ថែមបន្ទាត់នេះ ដើម្បីអោយប្រាកដថាវាស្គាល់
 
 use Illuminate\Database\Eloquent\Model;
 

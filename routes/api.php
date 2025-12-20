@@ -27,7 +27,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     // User
     Route::post('/update', [AuthController::class, 'update']); // ប្រើ POST សម្រាប់ update ដូចក្នុង Postman របស់អ្នក
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/me', [AuthController::class, 'me']);
+    Route::post('/me', [AuthController::class, 'me']);
     Route::delete('/delete', [AuthController::class, 'destroy']);
     
     // --- Posts ---
@@ -47,5 +47,5 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     // --- Likes ---
     // Like ឬ Unlike Post
-    Route::post('/posts/{id}/likes', [LikeController::class, 'likeOrUnlike']); 
+    Route::post('/posts/likes/{id}', [LikeController::class, 'likeOrUnlike']); 
 });

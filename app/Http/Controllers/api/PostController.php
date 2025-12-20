@@ -10,20 +10,39 @@ use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
-    // ទាញយក Post ទាំងអស់ (រាប់ទាំង like និង comment)
     public function index()
-    {
-        $posts = Post::orderBy('created_at', 'desc')
-            ->withCount(['comments', 'likes']) // រាប់ចំនួន comment និង like
-            ->with(['likes', 'comments']) // ទាញយកព័ត៌មាន likes និង comments (optional)
-            // ->with('user') // បើមាន relationship ជាមួយ user
-            ->get();
+{
+    // 1. ទាញយក Data
+    $posts = Post::with('user')->latest()->paginate(10);
 
-        return response()->json([
-            'status' => true,
-            'posts' => $posts
-        ], 200);
+    // 2. Loop ដើម្បីកែទិន្នន័យ
+    foreach ($posts as $post) {
+        
+        // --- កែសម្រួល Image Post ---
+        // ឆែកមើល៖ បើមានរូប AND រូបនោះមិនទាន់មានពាក្យ 'http' នៅពីមុខ (ដើម្បីកុំអោយជាន់គ្នា)
+        if ($post->image && !str_starts_with($post->image, 'http')) {
+            // យោងតាមរូបភាពដែលអ្នកផ្ញើមក Folder ឈ្មោះ "images/posts" (មិនមែន uploads ទេ)
+            $post->image = asset('images/posts/' . $post->image);
+        }
+
+        // --- កែសម្រួល Profile Image User ---
+        if ($post->user && $post->user->profile_image && !str_starts_with($post->user->profile_image, 'http')) {
+            // យោងតាមរូបភាព Folder គួរតែនៅក្នុង "images" ឬ "images/profiles" (សូមដាក់អោយត្រូវឈ្មោះ folder ពិត)
+            // ឧទាហរណ៍៖ ខ្ញុំដាក់ asset('images/...') 
+            $post->user->profile_image = asset('images/' . $post->user->profile_image);
+        }
+
+        // --- Logic រាប់ Like/Comment ---
+        $post->likesCount = $post->likes->count();
+        $post->commentsCount = $post->comments->count();
+        $post->isLiked = $post->likes->contains('user_id', Auth::id());
     }
+
+    return response()->json([
+        'status' => true,
+        'posts' => $posts
+    ]);
+}
 
     // បង្កើត Post ថ្មី
     public function store(Request $request)
